@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pie Catalogue</title>
+<style>
+:root {
+  --bg: #060810; --bg-2:#0a0e1a; --panel:#111827; --panel-2:#0f172a;
+  --line:#1f2937; --text:#f3f4f6; --muted:#a1a1aa; --faint:#71717a;
+  --accent:#8b5cf6; --accent-2:#22d3ee; --green:#34d399; --amber:#fbbf24;
+  --radius:20px; --shadow:0 20px 55px rgba(0,0,0,.38), 0 4px 18px rgba(0,0,0,.24);
+  --font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+* { box-sizing:border-box; }
+body { margin:0; font-family:var(--font); color:var(--text); background:
+  radial-gradient(950px 540px at 12% -12%, rgba(139,92,246,.32), transparent 62%),
+  radial-gradient(840px 520px at 92% -4%, rgba(34,211,238,.2), transparent 58%),
+  radial-gradient(700px 500px at 50% 115%, rgba(52,211,153,.08), transparent 60%),
+  linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%); min-height:100vh; }
+body::before { content:""; position:fixed; inset:0; pointer-events:none; background-image:linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px); background-size:44px 44px; mask-image:linear-gradient(180deg, rgba(0,0,0,.7), transparent 55%); }
+a { color:inherit; }
+header { max-width:1180px; margin:0 auto; padding:64px 22px 26px; }
+.eyebrow { display:inline-flex; gap:.55rem; align-items:center; padding:.4rem .8rem; border:1px solid rgba(139,92,246,.38); border-radius:999px; color:#ddd6fe; background:linear-gradient(135deg, rgba(139,92,246,.18), rgba(34,211,238,.08)); box-shadow:inset 0 1px 0 rgba(255,255,255,.08); font-size:.76rem; font-weight:700; letter-spacing:.11em; text-transform:uppercase; }
+h1 { font-size:clamp(2.7rem, 6.5vw, 5rem); line-height:.92; margin:.7rem 0 .9rem; letter-spacing:-.06em; text-wrap:balance; background:linear-gradient(90deg,#fff 0%,#ddd6fe 42%,#67e8f9 100%); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.sub { color:var(--muted); max-width:760px; font-size:1.07rem; line-height:1.7; }
+.sub code { font-family:var(--mono); font-size:.92em; color:#e9d5ff; background:rgba(139,92,246,.14); border:1px solid rgba(139,92,246,.24); border-radius:8px; padding:.12rem .38rem; }
+.toolbar { position:sticky; top:0; z-index:20; backdrop-filter:blur(18px) saturate(140%); background:rgba(6,8,16,.76); border-block:1px solid rgba(255,255,255,.09); box-shadow:0 10px 35px rgba(0,0,0,.22); }
+.toolbar-inner { max-width:1180px; margin:0 auto; padding:14px 22px; display:grid; grid-template-columns: minmax(230px, 1.45fr) minmax(180px,.7fr) minmax(175px,.6fr) auto; gap:12px; align-items:center; }
+input, select, button { font:inherit; }
+.search { position:relative; }
+.search input { width:100%; padding:14px 16px 14px 44px; border-radius:16px; border:1px solid var(--line); background:linear-gradient(180deg,#101827,#0c1322); color:var(--text); outline:none; box-shadow:inset 0 1px 0 rgba(255,255,255,.05); transition:border-color .16s ease, box-shadow .16s ease; }
+.search input::placeholder { color:var(--faint); }
+.search input:focus { border-color:var(--accent); box-shadow:0 0 0 4px rgba(139,92,246,.18), inset 0 1px 0 rgba(255,255,255,.05); }
+.search span { position:absolute; left:15px; top:50%; transform:translateY(-50%); color:var(--faint); font-size:1.05rem; }
+select { padding:13px 14px; border-radius:16px; background:linear-gradient(180deg,#101827,#0c1322); color:var(--text); border:1px solid var(--line); min-width:0; box-shadow:inset 0 1px 0 rgba(255,255,255,.05); }
+select:focus { border-color:var(--accent); box-shadow:0 0 0 4px rgba(139,92,246,.16); outline:none; }
+button { border:1px solid rgba(139,92,246,.5); background:linear-gradient(135deg, rgba(139,92,246,.34), rgba(34,211,238,.18)); color:#f5f3ff; border-radius:16px; padding:12px 17px; font-weight:650; cursor:pointer; box-shadow:0 8px 24px rgba(139,92,246,.18); transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease; }
+button:hover { border-color:var(--accent-2); box-shadow:0 10px 28px rgba(34,211,238,.16); transform:translateY(-1px); }
+button:active { transform:translateY(0); }
+main { max-width:1180px; margin:0 auto; padding:24px 22px 54px; }
+.meta { display:flex; flex-wrap:wrap; gap:10px; align-items:center; color:var(--muted); margin:10px 0 20px; }
+.pill { border:1px solid var(--line); border-radius:999px; padding:.42rem .78rem; background:rgba(255,255,255,.035); font-size:.86rem; box-shadow:inset 0 1px 0 rgba(255,255,255,.04); }
+.pill code { font-family:var(--mono); color:#e9d5ff; }
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(305px,1fr)); gap:18px; }
+.card { position:relative; overflow:hidden; background:linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.022)); border:1px solid rgba(255,255,255,.095); border-radius:var(--radius); padding:20px; box-shadow:var(--shadow); transition:transform .18s ease, border-color .18s ease, box-shadow .18s ease; min-height:196px; min-width:0; display:flex; flex-direction:column; gap:12px; }
+.card::before { content:""; position:absolute; inset:0 0 auto; height:1px; background:linear-gradient(90deg, transparent, rgba(196,181,253,.65), rgba(103,232,249,.45), transparent); opacity:.7; }
+.card:hover { transform:translateY(-4px); border-color:rgba(139,92,246,.6); box-shadow:0 24px 60px rgba(0,0,0,.42), 0 10px 30px rgba(139,92,246,.12); }
+.card h2 { margin:0; font-size:1.14rem; line-height:1.25; letter-spacing:-.025em; }
+.card h2 a { text-decoration:none; }
+.card h2 a:hover { color:#ddd6fe; text-decoration:underline; text-decoration-color:rgba(196,181,253,.55); text-underline-offset:3px; }
+.desc { color:var(--muted); line-height:1.58; font-size:.94rem; flex:1; }
+.badges { display:flex; flex-wrap:wrap; gap:8px; }
+.badge { font-family:var(--mono); font-size:.72rem; padding:.3rem .58rem; border-radius:999px; background:rgba(34,211,238,.11); color:#a5f3fc; border:1px solid rgba(34,211,238,.2); max-width:100%; overflow-wrap:anywhere; word-break:break-word; box-shadow:inset 0 1px 0 rgba(255,255,255,.05); }
+.badge.star { background:rgba(251,191,36,.11); color:#fde68a; border-color:rgba(251,191,36,.24); }
+.badge.age { background:rgba(52,211,153,.11); color:#a7f3d0; border-color:rgba(52,211,153,.24); }
+.tags { display:flex; flex-wrap:wrap; gap:6px; }
+.tag { font-size:.72rem; color:#cbd5e1; border:1px solid var(--line); padding:.22rem .5rem; border-radius:999px; background:rgba(255,255,255,.03); }
+.links { display:flex; gap:16px; font-size:.88rem; }
+.links a { color:#ddd6fe; text-decoration:none; }
+.links a:hover { color:#fff; text-decoration:underline; text-underline-offset:3px; }
+.empty, .error { border:1px dashed rgba(255,255,255,.2); border-radius:var(--radius); padding:30px; color:var(--muted); background:rgba(255,255,255,.03); }
+.error code { font-family:var(--mono); color:#fbcfe8; }
+@media (max-width: 860px) { .toolbar-inner { grid-template-columns:1fr 1fr; } .search { grid-column:1 / -1; } button { min-height:46px; } }
+@media (max-width: 560px) { .toolbar-inner { grid-template-columns:1fr; } header{padding-top:42px} .grid{grid-template-columns:1fr} .card{min-height:0} }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition:none !important; } .card:hover, button:hover { transform:none; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">pie package catalogue</div>
+  <h1>Find Pi packages fast.</h1>
+  <p class="sub">Search the npm <code>pi-package</code> catalogue and narrow it down by keyword category. GitHub stars and last-update age appear automatically when the catalogue was generated with <code>pie --github</code>.</p>
+</header>
+<div class="toolbar"><div class="toolbar-inner">
+  <label class="search"><span>⌕</span><input id="q" type="search" placeholder="Search name, description, repo, keyword…" autocomplete="off" /></label>
+  <select id="category" aria-label="Filter by category"><option value="">All categories</option></select>
+  <select id="sort" aria-label="Sort results">
+    <option value="name">Sort: name</option>
+    <option value="stars">Sort: GitHub stars ↓</option>
+    <option value="updated-desc" selected>Sort: last update ↓</option>
+    <option value="updated-asc">Sort: last update ↑</option>
+    <option value="category">Sort: category</option>
+  </select>
+  <button id="reset" type="button">Reset</button>
+</div></div>
+<main>
+  <div class="meta"><span class="pill" id="count">Loading…</span><span class="pill" id="active">No filters</span><span class="pill">Data: <code>dotcommander/pie-data</code></span></div>
+  <div id="status"></div>
+  <section class="grid" id="grid" aria-live="polite"></section>
+</main>
+<script>
+const state = { packages: [], query: '', category: '', sort: 'updated-desc' };
+const $ = id => document.getElementById(id);
+const grid = $('grid'), status = $('status'), count = $('count'), active = $('active');
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm = s => String(s ?? '').toLowerCase();
+const shortUrl = s => String(s ?? '').replace(/^git\+/, '').replace(/^https?:\/\//, '').replace(/\.git$/, '').replace(/\/$/, '');
+const keywords = p => p._keywords || (Array.isArray(p.keywords) ? p.keywords.filter(x => typeof x === 'string') : (typeof p.keywords === 'string' ? [p.keywords] : []));
+function prepare(p) {
+  p._keywords = Array.isArray(p.keywords) ? p.keywords.filter(x => typeof x === 'string') : (typeof p.keywords === 'string' ? [p.keywords] : []);
+  p._firstCategory = p._keywords[0] || '';
+  p._search = [p.name, p.description, p.repo, p.url, ...p._keywords, p.githubUrl, p.githubPushedAt, p.githubUpdatedAt].map(norm).join(' ');
+  const t = Date.parse(p.githubPushedAt || p.githubUpdatedAt || '');
+  p._updatedTime = Number.isFinite(t) ? t : -Infinity;
+  return p;
+}
+function matches(p) {
+  const q = state.query.trim().toLowerCase();
+  if (q && !p._search.includes(q)) return false;
+  if (state.category && !keywords(p).includes(state.category)) return false;
+  return true;
+}
+function updatedTime(p) { return p._updatedTime ?? -Infinity; }
+function compare(a,b) {
+  if (state.sort === 'stars') return (b.githubStars ?? -1) - (a.githubStars ?? -1) || a.name.localeCompare(b.name);
+  if (state.sort === 'updated-desc') return updatedTime(b) - updatedTime(a) || a.name.localeCompare(b.name);
+  if (state.sort === 'updated-asc') return updatedTime(a) - updatedTime(b) || a.name.localeCompare(b.name);
+  if (state.sort === 'category') return (a._firstCategory || '').localeCompare(b._firstCategory || '') || a.name.localeCompare(b.name);
+  return a.name.localeCompare(b.name);
+}
+function card(p) {
+  const tags = keywords(p).slice(0, 7).map(k => `<span class="tag">${esc(k)}</span>`).join('');
+  const badges = [];
+  if (p.githubStars != null) badges.push(`<span class="badge star">★ ${esc(p.githubStars)}</span>`);
+  if (p.githubLastUpdateDays != null) badges.push(`<span class="badge age">${esc(p.githubLastUpdateDays)}d since update</span>`);
+  if (p.githubUrl) badges.push(`<span class="badge" title="${esc(p.githubUrl)}">${esc(shortUrl(p.githubUrl))}</span>`);
+  return `<article class="card">
+    <h2><a href="${esc(p.url || '#')}" target="_blank" rel="noreferrer">${esc(p.name)}</a></h2>
+    <p class="desc">${esc(p.description || 'No description provided.')}</p>
+    ${badges.length ? `<div class="badges">${badges.join('')}</div>` : ''}
+    ${tags ? `<div class="tags">${tags}</div>` : ''}
+    <div class="links">${p.url ? `<a href="${esc(p.url)}" target="_blank" rel="noreferrer">npm</a>` : ''}${p.repo ? `<a href="${esc(p.repo)}" target="_blank" rel="noreferrer">repo</a>` : ''}</div>
+  </article>`;
+}
+function render() {
+  const rows = state.packages.filter(matches).sort(compare);
+  count.textContent = `${rows.length.toLocaleString()} of ${state.packages.length.toLocaleString()} packages`;
+  const parts = [];
+  if (state.query) parts.push(`search: ${state.query}`);
+  if (state.category) parts.push(`category: ${state.category}`);
+  active.textContent = parts.length ? parts.join(' · ') : 'No filters';
+  grid.innerHTML = rows.slice(0, 500).map(card).join('');
+  status.innerHTML = rows.length ? '' : '<div class="empty">No packages match the current search and category.</div>' + (rows.length === 0 && state.packages.length > 500 ? '' : '');
+  if (rows.length > 500) status.innerHTML += `<div class="empty">Showing first 500 matches; refine search or category to narrow results.</div>`;
+}
+function buildCategories() {
+  const freq = new Map();
+  for (const p of state.packages) for (const k of keywords(p)) freq.set(k, (freq.get(k) || 0) + 1);
+  const categories = [...freq.entries()].filter(([k]) => k !== 'pi-package').sort((a,b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 60);
+  $('category').innerHTML = '<option value="">All categories</option>' + categories.map(([k,n]) => `<option value="${esc(k)}">${esc(k)} (${n})</option>`).join('');
+}
+let searchTimer;
+$('q').addEventListener('input', e => { state.query = e.target.value; clearTimeout(searchTimer); searchTimer = setTimeout(render, 120); });
+$('category').addEventListener('change', e => { state.category = e.target.value; render(); });
+$('sort').addEventListener('change', e => { state.sort = e.target.value; render(); });
+$('reset').addEventListener('click', () => { state.query = ''; state.category = ''; state.sort = 'updated-desc'; $('q').value = ''; $('category').value = ''; $('sort').value = 'updated-desc'; render(); });
+const DATA_BASE = 'https://raw.githubusercontent.com/dotcommander/pie-data/main/';
+function normalize(c) {
+  const g = c.g || {};
+  return {
+    name: c.n, description: c.d, repo: c.r,
+    url: `https://www.npmjs.com/package/${c.n}`,
+    keywords: c.k || [],
+    githubStars: g.s ?? null, githubLastUpdateDays: g.u ?? null,
+    githubPushedAt: g.p ?? null, githubUpdatedAt: g.p ?? null, githubUrl: c.r || null,
+  };
+}
+Promise.all([fetch(DATA_BASE + 'catalogue-1.json'), fetch(DATA_BASE + 'catalogue-2.json')])
+  .then(([r1, r2]) => { if (!r1.ok || !r2.ok) throw new Error(`HTTP ${!r1.ok ? r1.status : r2.status}`); return Promise.all([r1.json(), r2.json()]); })
+  .then(([a, b]) => { state.packages = [...a, ...b].map(normalize).map(prepare); buildCategories(); render(); })
+  .catch(err => { status.innerHTML = `<div class="error">Could not load catalogue data from <code>dotcommander/pie-data</code> (${esc(err.message)}).</div>`; count.textContent = 'Catalogue not loaded'; });
+</script>
+</body>
+</html>
