@@ -156,7 +156,7 @@ $('q').addEventListener('input', e => { state.query = e.target.value; clearTimeo
 $('category').addEventListener('change', e => { state.category = e.target.value; render(); });
 $('sort').addEventListener('change', e => { state.sort = e.target.value; render(); });
 $('reset').addEventListener('click', () => { state.query = ''; state.category = ''; state.sort = 'updated-desc'; $('q').value = ''; $('category').value = ''; $('sort').value = 'updated-desc'; render(); });
-const DATA_BASE = 'https://raw.githubusercontent.com/dotcommander/pie-data/main/';
+const DATA_BASE = 'https://cdn.jsdelivr.net/gh/dotcommander/pie-data@0cf138f99d5074fc9146fdf27f55f931fd8810a2/';
 function normalize(c) {
   const g = c.g || {};
   return {
