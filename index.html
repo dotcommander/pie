@@ -78,8 +78,8 @@ main { max-width:1180px; margin:0 auto; padding:24px 22px 54px; }
   <select id="category" aria-label="Filter by category"><option value="">All categories</option></select>
   <select id="sort" aria-label="Sort results">
     <option value="name">Sort: name</option>
-    <option value="stars">Sort: GitHub stars ↓</option>
-    <option value="updated-desc" selected>Sort: last update ↓</option>
+    <option value="stars" selected>Sort: GitHub stars ↓</option>
+    <option value="updated-desc">Sort: last update ↓</option>
     <option value="updated-asc">Sort: last update ↑</option>
     <option value="category">Sort: category</option>
   </select>
@@ -91,7 +91,7 @@ main { max-width:1180px; margin:0 auto; padding:24px 22px 54px; }
   <section class="grid" id="grid" aria-live="polite"></section>
 </main>
 <script>
-const state = { packages: [], query: '', category: '', sort: 'updated-desc' };
+const state = { packages: [], query: '', category: '', sort: 'stars' };
 const $ = id => document.getElementById(id);
 const grid = $('grid'), status = $('status'), count = $('count'), active = $('active');
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -155,7 +155,7 @@ let searchTimer;
 $('q').addEventListener('input', e => { state.query = e.target.value; clearTimeout(searchTimer); searchTimer = setTimeout(render, 120); });
 $('category').addEventListener('change', e => { state.category = e.target.value; render(); });
 $('sort').addEventListener('change', e => { state.sort = e.target.value; render(); });
-$('reset').addEventListener('click', () => { state.query = ''; state.category = ''; state.sort = 'updated-desc'; $('q').value = ''; $('category').value = ''; $('sort').value = 'updated-desc'; render(); });
+$('reset').addEventListener('click', () => { state.query = ''; state.category = ''; state.sort = 'stars'; $('q').value = ''; $('category').value = ''; $('sort').value = 'stars'; render(); });
 const DATA_BASE = 'https://cdn.jsdelivr.net/gh/dotcommander/pie-data@0cf138f99d5074fc9146fdf27f55f931fd8810a2/';
 function normalize(c) {
   const g = c.g || {};
